@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Bridge</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 16px;
+      width: 250px;
+      background: #fefefe;
+      color: #333;
+    }
+    .header {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .status-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      margin-top: 12px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #f3f4f6;
+    }
+    .indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #9ca3af;
+    }
+    .indicator.connected {
+      background: #10b981;
+      box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+    }
+    .indicator.connecting {
+      background: #f59e0b;
+      animation: pulse 1s infinite alternate;
+    }
+    @keyframes pulse {
+      from { opacity: 0.5; }
+      to { opacity: 1; }
+    }
+    .description {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 12px;
+    }
+    .guide-section {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .guide-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+    .guide-list {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 11px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+    .guide-list li {
+      margin-bottom: 6px;
+    }
+    .guide-list code {
+      background: #f3f4f6;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">Hephaestus Bridge</div>
+  <div>Relays agent commands to localhost:3000</div>
+  
+  <div class="status-container">
+    <div class="indicator" id="statusIndicator"></div>
+    <span id="statusText">Checking...</span>
+  </div>
+
+  <div class="description">
+    External AI agents can use this bridge to automatically fill out forms and generate content on the Hephaestus web app.
+  </div>
+
+  <div class="guide-section">
+    <div class="guide-title">How to instruct your AI Agent:</div>
+    <ol class="guide-list">
+      <li><strong>Connect:</strong> Tell the agent: <em>"Send a POST request to http://localhost:3000/api/agent/relay with your commands."</em></li>
+      <li><strong>Command Format:</strong> The payload must be: <br/> <code>{"action": "fill_fields", "fields": {"fieldName": "value"}}</code></li>
+      <li><strong>Execution:</strong> The agent should inspect the web page for field names, formulate the JSON payload, and POST it. This extension will immediately inject the data.</li>
+    </ol>
+    
+    <details style="margin-top: 12px; font-size: 11px; color: #4b5563;">
+      <summary style="cursor: pointer; font-weight: bold; color: #111827;">View Tool Schemas (Field Names)</summary>
+      <div style="margin-top: 8px; max-height: 150px; overflow-y: auto; padding-right: 4px; background: #f9fafb; padding: 8px; border-radius: 4px;">
+        <strong>ADR Builder:</strong> consequences, context, date, decision, status, title<br/><br/>
+        <strong>API Documenter:</strong> description, method, title, url<br/><br/>
+        <strong>Code Poster:</strong> background, code, language, padding, theme, title<br/><br/>
+        <strong>Legal Generator:</strong> date, documentTitle, intro, partyA, partyB<br/><br/>
+        <strong>Meeting Notes:</strong> attendees, date, notes, title<br/><br/>
+        <strong>Post Mortem:</strong> date, incidentName, rootCause, severity, summary<br/><br/>
+        <strong>Release Notes:</strong> date, intro, version, features (array of strings), fixes (array of strings)
+      </div>
+    </details>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

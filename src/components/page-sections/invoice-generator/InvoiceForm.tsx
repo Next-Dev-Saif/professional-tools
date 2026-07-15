@@ -121,7 +121,7 @@ export function InvoiceForm() {
       <section className="space-y-4">
         <div className="flex items-center justify-between border-b border-border/50 pb-2">
            <h2 className="text-lg font-semibold">Line Items</h2>
-           <Button variant="ghost" size="sm" onClick={store.addItem} className="h-8 gap-1.5 text-xs">
+           <Button variant="outline" size="sm" onClick={store.addItem} className="h-8 gap-1.5 text-xs">
              <Plus className="w-3.5 h-3.5" />
              Add Item
            </Button>

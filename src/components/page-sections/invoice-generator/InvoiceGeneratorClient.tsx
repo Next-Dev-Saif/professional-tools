@@ -63,7 +63,6 @@ export function InvoiceGeneratorClient() {
           <div className="flex items-center gap-2">
              <Button
                 variant="secondary"
-                size="sm"
                 onClick={() => setViewMode(prev => prev === '2d' ? '3d' : '2d')}
                 title="Toggle 3D View"
               >

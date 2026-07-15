@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Eye, AlignLeft, Plus, Trash2, Clock, AlertTriangle, CheckSquare } from 'lucide-react';
 import { toJpeg } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
+import { useAgent } from '@/context/AgentContext';
 
 interface TimelineEvent {
   id: string;
@@ -21,13 +22,13 @@ interface ActionItem {
 export function PostMortemClient() {
   const docId = useId().replace(/:/g, '').toUpperCase();
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
-  
+
   const [incidentName, setIncidentName] = useState('Production Database Outage');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [severity, setSeverity] = useState('SEV-1');
   const [summary, setSummary] = useState('A brief outage occurred in the primary database cluster, causing 500 errors across the main application for approximately 45 minutes.');
   const [rootCause, setRootCause] = useState('A rogue migration script locked the users table, causing connection pooling exhaustion in the API tier.');
-  
+
   const [timeline, setTimeline] = useState<TimelineEvent[]>([
     { id: '1', time: '14:00', description: 'Migration script deployed.' },
     { id: '2', time: '14:05', description: 'Alerts triggered for high connection count.' },
@@ -69,14 +70,14 @@ export function PostMortemClient() {
     if (!previewRef.current) return;
     setIsGenerating3D(true);
     try {
-      const dataUrl = await toJpeg(previewRef.current, { 
-        quality: 0.8, 
+      const dataUrl = await toJpeg(previewRef.current, {
+        quality: 0.8,
         pixelRatio: 1.0,
         skipAutoScale: true,
         backgroundColor: '#ffffff'
       });
       setTextureUrl(dataUrl);
-      
+
       const rect = previewRef.current.getBoundingClientRect();
       if (rect.width && rect.height) {
         setAspect(rect.height / rect.width);
@@ -95,11 +96,52 @@ export function PostMortemClient() {
     }
   }, [viewMode, incidentName, date, severity, summary, rootCause, timeline, actionItems]);
 
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'Post Mortem Builder',
+      `{
+        "incidentName": "string",
+        "date": "YYYY-MM-DD",
+        "severity": "SEV-1 | SEV-2 | SEV-3 | SEV-4",
+        "summary": "string",
+        "rootCause": "string",
+        "timeline": [{"time": "HH:MM", "description": "string"}],
+        "actionItems": [{"owner": "string", "task": "string"}]
+      }`,
+      (data: any) => {
+        if (data.incidentName) setIncidentName(data.incidentName);
+        if (data.date) setDate(data.date);
+        if (data.severity) setSeverity(data.severity);
+        if (data.summary) setSummary(data.summary);
+        if (data.rootCause) setRootCause(data.rootCause);
+
+        if (Array.isArray(data.timeline)) {
+          setTimeline(data.timeline.map((t: any, i: number) => ({
+            id: `agent-time-${i}`,
+            time: t.time || '00:00',
+            description: t.description || ''
+          })));
+        }
+
+        if (Array.isArray(data.actionItems)) {
+          setActionItems(data.actionItems.map((a: any, i: number) => ({
+            id: `agent-action-${i}`,
+            owner: a.owner || '',
+            task: a.task || ''
+          })));
+        }
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
+
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');
     if (!printWindow || !previewRef.current) return;
     const contentHtml = previewRef.current.innerHTML;
-    
+
     printWindow.document.write(`
       <html>
         <head>
@@ -121,7 +163,7 @@ export function PostMortemClient() {
         </body>
       </html>
     `);
-    
+
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => {
@@ -229,7 +271,7 @@ export function PostMortemClient() {
               <label className="text-xs font-bold uppercase tracking-wider text-foreground/60 flex items-center gap-2">
                 <Clock className="w-3 h-3" /> Timeline
               </label>
-              <button 
+              <button
                 onClick={addTimelineEvent}
                 className="flex items-center gap-1 text-[11px] font-bold text-primary hover:bg-primary/10 px-2 py-1 rounded-md transition-colors"
               >
@@ -240,7 +282,7 @@ export function PostMortemClient() {
             <div className="space-y-3">
               <AnimatePresence>
                 {timeline.map((event) => (
-                  <motion.div 
+                  <motion.div
                     key={event.id}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -260,7 +302,7 @@ export function PostMortemClient() {
                       className="flex-1 bg-foreground/5 border border-border/50 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary transition-all"
                       placeholder="Event description..."
                     />
-                    <button 
+                    <button
                       onClick={() => removeTimelineEvent(event.id)}
                       className="opacity-0 group-hover:opacity-100 p-1.5 text-foreground/30 hover:text-rose-500 transition-colors"
                     >
@@ -280,7 +322,7 @@ export function PostMortemClient() {
               <label className="text-xs font-bold uppercase tracking-wider text-foreground/60 flex items-center gap-2">
                 <CheckSquare className="w-3 h-3" /> Action Items
               </label>
-              <button 
+              <button
                 onClick={addActionItem}
                 className="flex items-center gap-1 text-[11px] font-bold text-primary hover:bg-primary/10 px-2 py-1 rounded-md transition-colors"
               >
@@ -291,7 +333,7 @@ export function PostMortemClient() {
             <div className="space-y-3">
               <AnimatePresence>
                 {actionItems.map((item) => (
-                  <motion.div 
+                  <motion.div
                     key={item.id}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -312,7 +354,7 @@ export function PostMortemClient() {
                       className="flex-1 bg-foreground/5 border border-border/50 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary transition-all"
                       placeholder="Task description..."
                     />
-                    <button 
+                    <button
                       onClick={() => removeActionItem(item.id)}
                       className="opacity-0 group-hover:opacity-100 p-1.5 text-foreground/30 hover:text-rose-500 transition-colors"
                     >
@@ -330,7 +372,7 @@ export function PostMortemClient() {
       <div className="flex-1 relative bg-foreground/5 overflow-hidden flex flex-col min-h-[500px] md:h-screen">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-surface/50 backdrop-blur-md sticky top-0 z-20">
           <h3 className="text-sm font-semibold text-foreground/80 tracking-wide uppercase">Document Preview</h3>
-          <button 
+          <button
             onClick={handlePrint}
             className="flex items-center gap-2 px-4 py-1.5 bg-background border border-border/50 hover:bg-surface/80 rounded-lg text-sm font-medium transition-all shadow-sm"
           >
@@ -406,7 +448,7 @@ export function PostMortemClient() {
             </div>
           </div>
         </div>
-        
+
         {viewMode === '3d' && (
           <div className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-10">
             {isGenerating3D && (

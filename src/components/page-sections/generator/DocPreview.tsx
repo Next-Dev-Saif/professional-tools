@@ -89,7 +89,7 @@ export function DocPreview({ content, isGenerating }: DocPreviewProps) {
             table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
             th, td { border: 1px solid #ddd; padding: 12px 8px; text-align: left; }
             th { background-color: #f9f9f9; font-weight: 600; }
-            a { color: #2563eb; text-decoration: none; }
+            a { color: #ea580c; text-decoration: none; }
           </style>
         </head>
         <body>

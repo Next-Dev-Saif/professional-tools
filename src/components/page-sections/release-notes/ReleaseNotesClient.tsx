@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Eye, AlignLeft, Sparkles, Plus, Trash2, Megaphone } from 'lucide-react';
 import { toJpeg } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
+import { useAgent } from '@/context/AgentContext';
 
 interface NoteItem {
   id: string;
@@ -60,34 +61,38 @@ export function ReleaseNotesClient() {
     { id: 'b2', text: 'Resolved memory leak in the WebGL renderer when switching tabs rapidly.' }
   ]);
 
-  useEffect(() => {
-    const handleAgentCommand = (event: MessageEvent) => {
-      // Check if it's our custom event from the extension
-      if (event.data?.type === 'HEPHAESTUS_AGENT_COMMAND' && event.data?.action === 'fill_fields') {
-        const { fields } = event.data;
-        if (!fields) return;
+  const { registerPage, unregisterPage } = useAgent();
 
-        // If the payload explicitly contains arrays for features or fixes, update state directly!
-        if (Array.isArray(fields.features)) {
-          setFeatures(fields.features.map((text: string, i: number) => ({ id: `agent-f-${i}`, text })));
+  useEffect(() => {
+    registerPage(
+      'Release Notes Builder',
+      `{
+        "version": "string",
+        "date": "YYYY-MM-DD",
+        "intro": "string",
+        "template": "custom | major | patch",
+        "features": ["string"],
+        "fixes": ["string"]
+      }`,
+      (data: any) => {
+        if (Array.isArray(data.features)) {
+          setFeatures(data.features.map((text: string, i: number) => ({ id: `agent-f-${i}`, text })));
         }
-        if (Array.isArray(fields.fixes)) {
-          setFixes(fields.fixes.map((text: string, i: number) => ({ id: `agent-b-${i}`, text })));
+        if (Array.isArray(data.fixes)) {
+          setFixes(data.fixes.map((text: string, i: number) => ({ id: `agent-b-${i}`, text })));
         }
         
-        // Also handle the simple string fields that might be mapped to React state
-        if (fields.version) setVersion(fields.version);
-        if (fields.date) setDate(fields.date);
-        if (fields.intro) setIntro(fields.intro);
-        if (fields.template && Object.keys(TEMPLATES).includes(fields.template)) {
-          setTemplate(fields.template as keyof typeof TEMPLATES);
+        if (data.version) setVersion(data.version);
+        if (data.date) setDate(data.date);
+        if (data.intro) setIntro(data.intro);
+        if (data.template && Object.keys(TEMPLATES).includes(data.template)) {
+          setTemplate(data.template as keyof typeof TEMPLATES);
         }
       }
-    };
+    );
 
-    window.addEventListener('message', handleAgentCommand);
-    return () => window.removeEventListener('message', handleAgentCommand);
-  }, []);
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
 
   const previewRef = useRef<HTMLDivElement>(null);
   const [textureUrl, setTextureUrl] = useState<string>('');

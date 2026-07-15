@@ -19,6 +19,7 @@ import {
   buildReleaseNotesPrompt,
   buildAPIDocPrompt,
   buildLegalPrompt,
+  buildFormFillerPrompt,
 } from './prompts';
 import type { ExecutionResult } from './types';
 
@@ -33,6 +34,7 @@ const PROMPT_BUILDERS: Record<string, (p: Record<string, unknown>) => string> = 
   'release-notes': buildReleaseNotesPrompt,
   'api-documenter': buildAPIDocPrompt,
   'code-to-legal': buildLegalPrompt,
+  'form-filler': buildFormFillerPrompt,
 };
 
 /** Validate that all required parameters are present */

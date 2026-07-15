@@ -6,6 +6,7 @@ import { toPng } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useAgent } from '@/context/AgentContext';
 
 const TEMPLATES = {
   executive: 'Executive Summary',
@@ -52,6 +53,31 @@ export default function NotesClient() {
       return () => clearTimeout(timer);
     }
   }, [viewMode, title, date, attendees, notes, template]);
+
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'Meeting Notes',
+      `{
+        "template": "executive | minutes | adr",
+        "title": "string",
+        "date": "YYYY-MM-DD",
+        "attendees": "string",
+        "notes": "string (markdown)"
+      }`,
+      (data: any) => {
+        if (data.template && Object.keys(TEMPLATES).includes(data.template)) {
+          setTemplate(data.template as keyof typeof TEMPLATES);
+        }
+        if (data.title) setTitle(data.title);
+        if (data.date) setDate(data.date);
+        if (data.attendees) setAttendees(data.attendees);
+        if (data.notes) setNotes(data.notes);
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
 
   return (
     <div className="flex flex-col md:flex-row md:h-screen md:overflow-hidden bg-background">

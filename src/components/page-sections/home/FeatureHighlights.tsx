@@ -34,7 +34,7 @@ const SECONDARY = [
   },
   {
     icon: Globe,
-    color: 'text-blue-500',
+    color: 'text-orange-500',
     title: 'No install. Open a URL.',
     body: 'Works in any browser. No extensions, no CLI, no npm package to maintain.',
   },

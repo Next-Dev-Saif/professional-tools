@@ -6,6 +6,7 @@ import { Download, Eye, FileText, FileSignature, Save, Eraser, Calendar, User, A
 import { toJpeg } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
 import SignatureCanvas from 'react-signature-canvas';
+import { useAgent } from '@/context/AgentContext';
 
 interface Term {
   id: string;
@@ -139,6 +140,42 @@ export default function LegalGeneratorClient() {
       return () => clearTimeout(timer);
     }
   }, [viewMode, partyA, partyB, date, template, signatureData, documentTitle, intro, terms]);
+
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'Legal Generator',
+      `{
+        "template": "nda | contractor | project_start | oss_cla",
+        "partyA": "string",
+        "partyB": "string",
+        "date": "YYYY-MM-DD",
+        "documentTitle": "string",
+        "intro": "string",
+        "terms": [{"title": "string", "content": "string"}]
+      }`,
+      (data: any) => {
+        if (data.template && Object.keys(TEMPLATES).includes(data.template)) {
+          setTemplate(data.template as keyof typeof TEMPLATES);
+        }
+        if (data.partyA) setPartyA(data.partyA);
+        if (data.partyB) setPartyB(data.partyB);
+        if (data.date) setDate(data.date);
+        if (data.documentTitle) setDocumentTitle(data.documentTitle);
+        if (data.intro) setIntro(data.intro);
+        
+        if (Array.isArray(data.terms)) {
+          setTerms(data.terms.map((t: any, i: number) => ({
+            id: `agent-term-${i}`,
+            title: t.title || '',
+            content: t.content || ''
+          })));
+        }
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
 
   const handlePrint = () => {
     const printWindow = window.open('', '_blank');

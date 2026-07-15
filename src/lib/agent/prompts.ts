@@ -241,3 +241,28 @@ Requirements:
 
 Output the Markdown legal document directly — no conversational preamble.`;
 }
+
+// ─── Form Filler ────────────────────────────────────────────────────────────
+
+export function buildFormFillerPrompt(params: Record<string, unknown>): string {
+  const { prompt, schemaDescription } = params as Record<string, string>;
+
+  return `You are a strict data-extraction AI named Hephaestus.
+Your job is to read a natural language instruction and map it to a specific JSON schema to autofill a web form.
+
+USER INSTRUCTION:
+${prompt}
+
+TARGET SCHEMA / CONTEXT:
+${schemaDescription}
+
+REQUIREMENTS:
+1. You MUST output ONLY valid JSON.
+2. Do not include any conversational text, preamble, or markdown formatting other than the JSON block itself.
+3. Map the user's intent to the fields described in the TARGET SCHEMA.
+4. If a field is not mentioned by the user, omit it or use a sensible default if required by the schema.
+5. If the user mentions lists (like multiple line items or features), ensure they are output as JSON arrays matching the schema.
+
+OUTPUT ONLY JSON:`;
+}
+

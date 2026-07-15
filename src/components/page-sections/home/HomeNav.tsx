@@ -57,7 +57,7 @@ export function HomeNav() {
           {/* CTA */}
           <Link
             href="/tools/commit-to-doc"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[9px] bg-primary text-white font-semibold text-[14px] hover:bg-blue-700 transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-white font-semibold text-[14px] hover:bg-orange-700 transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm"
           >
             Try free
           </Link>

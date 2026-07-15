@@ -4,6 +4,8 @@ import { Canvas, useLoader, useFrame } from '@react-three/fiber';
 import { ContactShadows, OrbitControls, Environment, RoundedBox, Html } from '@react-three/drei';
 import { Suspense, useRef, useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
+import { GLTFExporter } from 'three-stdlib';
+import { Download } from 'lucide-react';
 import { a, useSpring } from '@react-spring/three';
 
 const A4_ASPECT = 1.414;
@@ -145,7 +147,34 @@ function ClipboardScene({ textureUrl, aspect, currentPage }: { textureUrl: strin
 
 export function ThreeDViewer({ textureUrl, aspect = 1.414 }: { textureUrl: string, aspect?: number }) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [isExporting, setIsExporting] = useState(false);
   const numPages = Math.max(1, Math.ceil(aspect / A4_ASPECT));
+  const sceneGroupRef = useRef<THREE.Group>(null);
+
+  const handleExportGLTF = () => {
+    if (!sceneGroupRef.current) return;
+    setIsExporting(true);
+    const exporter = new GLTFExporter();
+    exporter.parse(
+      sceneGroupRef.current,
+      (gltf) => {
+        // When binary is true, gltf is an ArrayBuffer
+        const blob = new Blob([gltf as ArrayBuffer], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = '3d-document-model.glb';
+        link.click();
+        URL.revokeObjectURL(url);
+        setIsExporting(false);
+      },
+      (error) => {
+        console.error('An error happened during export:', error);
+        setIsExporting(false);
+      },
+      { binary: true, maxTextureSize: 2048 }
+    );
+  };
 
   if (!textureUrl) {
     return (
@@ -166,7 +195,7 @@ export function ThreeDViewer({ textureUrl, aspect = 1.414 }: { textureUrl: strin
           
           <OrbitControls makeDefault minDistance={3} maxDistance={12} />
           
-          <group position={[0, 0, 0]}>
+          <group ref={sceneGroupRef} position={[0, 0, 0]}>
             <ClipboardScene textureUrl={textureUrl} aspect={aspect} currentPage={currentPage} />
           </group>
 
@@ -187,15 +216,30 @@ export function ThreeDViewer({ textureUrl, aspect = 1.414 }: { textureUrl: strin
           <span className="text-sm font-semibold tracking-wide min-w-[5rem] text-center">
             {currentPage + 1} / {numPages}
           </span>
-          <button 
-            className="text-foreground/80 hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-bold px-2 py-1"
-            disabled={currentPage === numPages - 1} 
-            onClick={() => setCurrentPage(p => p + 1)}
+            <button 
+              className="text-foreground/80 hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed transition-colors font-bold px-2 py-1"
+              disabled={currentPage === numPages - 1} 
+              onClick={() => setCurrentPage(p => p + 1)}
+            >
+              Next &rarr;
+            </button>
+          </div>
+        )}
+        
+        <div className="absolute top-24 right-8 z-50">
+          <button
+            onClick={handleExportGLTF}
+            disabled={isExporting}
+            className="flex items-center gap-2 bg-background/90 backdrop-blur-md border border-border shadow-lg px-4 py-2 rounded-xl text-sm font-bold text-foreground/80 hover:text-primary transition-colors disabled:opacity-50"
           >
-            Next &rarr;
+            {isExporting ? (
+              <span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            {isExporting ? 'Exporting...' : 'Download 3D Model'}
           </button>
         </div>
-      )}
-    </div>
-  );
-}
+      </div>
+    );
+  }

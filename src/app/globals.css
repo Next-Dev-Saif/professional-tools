@@ -4,7 +4,7 @@
 :root {
   --background: #FAFAFA;
   --foreground: #111827;
-  --primary: #2563EB;
+  --primary: #EA580C;
   --surface: #FFFFFF;
   --border: #E5E7EB;
 }
@@ -23,7 +23,7 @@
   :root {
     --background: #0d0f14;
     --foreground: #F9FAFB;
-    --primary: #3B82F6;
+    --primary: #F97316;
     --surface: #1E232E;
     --border: #2D3748;
   }

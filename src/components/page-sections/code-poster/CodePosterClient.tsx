@@ -6,6 +6,7 @@ import { toJpeg } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useAgent } from '@/context/AgentContext';
 
 const THEMES = {
   macDark: { name: 'macOS Dark Frame', bg: 'bg-slate-900', border: 'border-slate-800' },
@@ -77,6 +78,33 @@ export function CodePosterClient() {
       return () => clearTimeout(timer);
     }
   }, [viewMode, theme, language, title, subtitle, padding, background, code]);
+
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'Code Poster',
+      `{
+        "title": "string",
+        "subtitle": "string",
+        "language": "typescript | javascript | python | rust | go | java | cpp | css | html | sql | bash | json",
+        "theme": "macDark | macLight | polaroid",
+        "background": "string (one of the background options)",
+        "padding": "p-8 | p-12 | p-20",
+        "code": "string (the raw code)"
+      }`,
+      (data: any) => {
+        if (data.title) setTitle(data.title);
+        if (data.subtitle) setSubtitle(data.subtitle);
+        if (data.language && LANGUAGES.includes(data.language)) setLanguage(data.language);
+        if (data.theme && Object.keys(THEMES).includes(data.theme)) setTheme(data.theme as keyof typeof THEMES);
+        if (data.background) setBackground(data.background);
+        if (data.padding) setPadding(data.padding);
+        if (data.code) setCode(data.code);
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
 
   const handlePrint = async () => {
     if (!previewRef.current) return;

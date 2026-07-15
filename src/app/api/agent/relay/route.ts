@@ -56,7 +56,16 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const text = await req.text();
+    let body;
+    try {
+      body = JSON.parse(text);
+    } catch (e) {
+      return new Response(JSON.stringify({ error: 'Body must be valid JSON' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...CORS_HEADERS }
+      });
+    }
 
     // Broadcast the command to all active Chrome Extensions
     const encoder = new TextEncoder();

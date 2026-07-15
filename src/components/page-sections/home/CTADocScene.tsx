@@ -26,7 +26,7 @@ function CTACard({
 }) {
   const ref = useRef<THREE.Group>(null);
   const accent = new THREE.Color(accentHex);
-  const base = new THREE.Color('#e8eeff');
+  const base = new THREE.Color('#fff7ed');
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
@@ -50,7 +50,7 @@ function CTACard({
       {[0.42, 0.18, -0.08, -0.34, -0.6, -0.86].map((y, i) => (
         <mesh key={i} position={[i % 4 === 3 ? -0.2 : 0, y, 0.04]}>
           <planeGeometry args={[i % 4 === 3 ? 1.2 : 1.7, 0.065]} />
-          <meshStandardMaterial color="#ccd6ee" roughness={0.6} opacity={0.8} transparent />
+          <meshStandardMaterial color="#fed7aa" roughness={0.6} opacity={0.8} transparent />
         </mesh>
       ))}
     </group>
@@ -66,31 +66,31 @@ export function CTADocScene() {
     >
       <Suspense fallback={null}>
         {/* Manual lights only — no Environment HDR */}
-        <ambientLight intensity={1.0} color="#c8d8ff" />
+        <ambientLight intensity={1.0} color="#fed7aa" />
         <pointLight position={[4, 6, 6]} intensity={2.5} color="#ffffff" />
-        <pointLight position={[-5, -2, 4]} intensity={0.8} color="#93c5fd" />
-        <pointLight position={[2, -5, 3]} intensity={0.4} color="#818cf8" />
+        <pointLight position={[-5, -2, 4]} intensity={0.8} color="#fdba74" />
+        <pointLight position={[2, -5, 3]} intensity={0.4} color="#fde68a" />
 
         {/* Back-left */}
         <CTACard
           position={[-2.0, 0.1, -1.0]}
           rotation={[0.05, 0.28, -0.15]}
           delay={1.8}
-          accentHex="#6366f1"
+          accentHex="#f97316"
         />
         {/* Back-right */}
         <CTACard
           position={[1.8, -0.2, -0.8]}
           rotation={[0.04, -0.2, 0.12]}
           delay={0.9}
-          accentHex="#0ea5e9"
+          accentHex="#f59e0b"
         />
         {/* Center front — hero prominence */}
         <CTACard
           position={[-0.1, 0.1, 1.0]}
           rotation={[0.02, 0.04, -0.03]}
           delay={0}
-          accentHex="#2563eb"
+          accentHex="#ea580c"
         />
       </Suspense>
     </Canvas>

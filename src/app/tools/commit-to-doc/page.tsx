@@ -8,6 +8,8 @@ import { Input } from '@/components/core/Input';
 import { DocPreview } from '@/components/page-sections/generator/DocPreview';
 import { Sparkles, FileText, UserCircle, Building2, Briefcase, User, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAgent } from '@/context/AgentContext';
+import { useEffect } from 'react';
 
 export default function Home() {
   const [commitText, setCommitText] = useState('');
@@ -20,6 +22,29 @@ export default function Home() {
 
   const [content, setContent] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'Commit to Document',
+      `{
+        "docType": "Technical Documentation | Project Update Report | Client Facing Release Notes | API Reference | Legal / Developer Agreement",
+        "userName": "string",
+        "companyName": "string",
+        "clientName": "string",
+        "commitText": "string"
+      }`,
+      (data: any) => {
+        if (data.docType) setDocType(data.docType);
+        if (data.userName) setUserName(data.userName);
+        if (data.companyName) setCompanyName(data.companyName);
+        if (data.clientName) setClientName(data.clientName);
+        if (data.commitText) setCommitText(data.commitText);
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
 
   const docTypes = [
     { value: 'Technical Documentation', label: 'Technical Documentation' },

@@ -125,7 +125,7 @@ export function HowItWorksSection() {
             >
               <Link
                 href="/tools/commit-to-doc"
-                className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-[10px] bg-primary text-white font-semibold text-[15px] hover:bg-blue-700 transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm"
+                className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-primary text-white font-semibold text-[15px] hover:bg-orange-700 transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm"
               >
                 Try it now — it&apos;s free
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />

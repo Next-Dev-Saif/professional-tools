@@ -6,9 +6,59 @@ import { Button } from '@/components/core/Button';
 import { useInvoiceStore } from '@/store/useInvoiceStore';
 import { Plus, Trash2 } from 'lucide-react';
 import { Textarea } from '@/components/core/Textarea';
+import { useAgent } from '@/context/AgentContext';
+import { useEffect } from 'react';
 
 export function InvoiceForm() {
   const store = useInvoiceStore();
+  const updateField = store.updateField;
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'Invoice Generator',
+      `{
+        "template": "minimal | modern | professional",
+        "taxRate": "number",
+        "invoiceNumber": "string",
+        "date": "YYYY-MM-DD",
+        "dueDate": "YYYY-MM-DD",
+        "senderName": "string",
+        "senderEmail": "string",
+        "senderAddress": "string",
+        "clientName": "string",
+        "clientEmail": "string",
+        "clientAddress": "string",
+        "items": [{ "description": "string", "quantity": "number", "rate": "number" }]
+      }`,
+      (data: any) => {
+        // Map the parsed JSON back into the Zustand store safely
+        const simpleFields = [
+          'template', 'taxRate', 'invoiceNumber', 'date', 'dueDate', 
+          'senderName', 'senderEmail', 'senderAddress',
+          'clientName', 'clientEmail', 'clientAddress'
+        ];
+
+        simpleFields.forEach((field) => {
+          if (data[field] !== undefined) {
+            updateField(field, data[field]);
+          }
+        });
+
+        if (Array.isArray(data.items)) {
+          const newItems = data.items.map((item: any) => ({
+            id: crypto.randomUUID(),
+            description: item.description || '',
+            quantity: Number(item.quantity) || 1,
+            rate: Number(item.rate) || 0,
+          }));
+          updateField('items', newItems);
+        }
+      }
+    );
+
+    return () => unregisterPage();
+  }, [updateField, registerPage, unregisterPage]);
 
   return (
     <div className="flex flex-col gap-8">

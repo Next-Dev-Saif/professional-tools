@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   description: "Transform raw commits and PR descriptions into beautifully crafted, professional documentation instantly.",
 };
 
+import { AgentProvider } from "@/context/AgentContext";
+import { GlobalAIAgent } from "@/components/core/GlobalAIAgent";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +30,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-[var(--background)]">{children}</body>
+      <body className="min-h-full flex flex-col bg-[var(--background)]">
+        <AgentProvider>
+          {children}
+          <GlobalAIAgent />
+        </AgentProvider>
+      </body>
     </html>
   );
 }

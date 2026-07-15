@@ -14,6 +14,11 @@ import {
   Megaphone,
   Webhook,
   ImageIcon,
+  FileSearch,
+  Bug,
+  Book,
+  FileCheck,
+  LayoutTemplate,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -40,7 +45,7 @@ const TOOLS = [
       'Paste a raw PR or commit description — get back a structured technical doc, release note, or API reference ready to publish.',
     href: '/tools/commit-to-doc',
     icon: FileText,
-    accentText: 'text-blue-500',
+    accentText: 'text-orange-500',
     badge: 'Most used',
     featured: true,
   },
@@ -134,6 +139,51 @@ const TOOLS = [
     badge: 'New',
     featured: false,
   },
+  {
+    title: 'RFC Generator',
+    description: 'Propose new features and architectures with a standardized Request for Comments document.',
+    href: '/tools/rfc-generator',
+    icon: FileSearch,
+    accentText: 'text-zinc-500',
+    badge: 'New',
+    featured: false,
+  },
+  {
+    title: 'PRD Builder',
+    description: 'Product Requirements Document generator for structured feature planning.',
+    href: '/tools/prd-builder',
+    icon: LayoutTemplate,
+    accentText: 'text-sky-500',
+    badge: 'New',
+    featured: false,
+  },
+  {
+    title: 'Bug Report Formatter',
+    description: 'Format crisp and reproducible bug reports ready for Jira/GitHub.',
+    href: '/tools/bug-formatter',
+    icon: Bug,
+    accentText: 'text-red-500',
+    badge: 'New',
+    featured: false,
+  },
+  {
+    title: 'SOP Writer',
+    description: 'Write step-by-step Standard Operating Procedures and playbooks.',
+    href: '/tools/sop-writer',
+    icon: Book,
+    accentText: 'text-yellow-600',
+    badge: 'New',
+    featured: false,
+  },
+  {
+    title: 'SLA Generator',
+    description: 'Generate legal Service Level Agreements for clients and providers.',
+    href: '/tools/sla-generator',
+    icon: FileCheck,
+    accentText: 'text-emerald-600',
+    badge: 'New',
+    featured: false,
+  },
 ];
 
 // Bento desktop layout — explicit grid positions (1-indexed, 12-col grid)
@@ -150,6 +200,11 @@ const DESKTOP_LAYOUT: [number, number, number, number][] = [
   [1, 5, 5, 6],   // card 8
   [5, 9, 5, 6],   // card 9
   [9, 13, 5, 6],  // card 10
+  [1, 4, 6, 7],   // card 11
+  [4, 7, 6, 7],   // card 12
+  [7, 10, 6, 7],  // card 13
+  [10, 13, 6, 7], // card 14
+  [1, 7, 7, 8],   // card 15
 ];
 
 const [featured, ...rest] = TOOLS;
@@ -201,7 +256,7 @@ export function ToolsGrid() {
                   href={tool.href}
                   className={`group flex flex-col h-full min-h-[180px] p-7 rounded-2xl border border-border/40 transition-all duration-250 focus:outline-none focus:ring-2 focus:ring-primary/35 focus:ring-offset-2 ${
                     tool.featured
-                      ? 'bg-gradient-to-br from-blue-50 to-indigo-50/60 hover:border-primary/25 dark:from-blue-950/30 dark:to-indigo-950/20'
+                      ? 'bg-gradient-to-br from-orange-50 to-indigo-50/60 hover:border-primary/25 dark:from-orange-950/30 dark:to-indigo-950/20'
                       : 'bg-surface/60 hover:bg-surface hover:border-border/70 hover:shadow-[0_4px_20px_rgba(0,0,0,0.06)]'
                   }`}
                 >
@@ -240,19 +295,19 @@ export function ToolsGrid() {
             <Link
               href={featured.href}
               className="group relative flex flex-col h-full min-h-[340px] p-10 rounded-3xl overflow-hidden border border-border/40 hover:border-primary/30 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2"
-              style={{ background: 'linear-gradient(145deg, #eef4ff 0%, #f8faff 55%, #f3eeff 100%)' }}
+              style={{ background: 'linear-gradient(145deg, #fff7ed 0%, #ffedd5 55%, #fefce8 100%)' }}
             >
               {/* Dark mode surface */}
               <div
                 aria-hidden="true"
                 className="absolute inset-0 opacity-0 dark:opacity-100 rounded-3xl"
-                style={{ background: 'linear-gradient(145deg, rgba(37,99,235,0.12) 0%, rgba(17,20,30,0.97) 45%, rgba(99,102,241,0.09) 100%)' }}
+                style={{ background: 'linear-gradient(145deg, rgba(234,88,12,0.12) 0%, rgba(17,20,30,0.97) 45%, rgba(249,115,22,0.09) 100%)' }}
               />
               {/* Radial accent glow top-right */}
               <div
                 aria-hidden="true"
                 className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none"
-                style={{ background: 'radial-gradient(circle, rgba(37,99,235,0.14) 0%, transparent 68%)' }}
+                style={{ background: 'radial-gradient(circle, rgba(234,88,12,0.14) 0%, transparent 68%)' }}
               />
 
               {featured.badge && (

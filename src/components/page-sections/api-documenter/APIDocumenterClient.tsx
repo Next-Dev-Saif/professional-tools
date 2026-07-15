@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Download, Eye, AlignLeft, Code, Plus, Trash2, Webhook } from 'lucide-react';
 import { toJpeg } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
+import { useAgent } from '@/context/AgentContext';
 
 interface ApiField {
   id: string;
@@ -73,18 +74,18 @@ export function APIDocumenterClient() {
   const docId = useId().replace(/:/g, '').toUpperCase().slice(0, 6);
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
   const [template, setTemplate] = useState<keyof typeof TEMPLATES>('custom');
-  
+
   const [title, setTitle] = useState('Create User');
   const [method, setMethod] = useState('POST');
   const [url, setUrl] = useState('/api/v1/users');
   const [description, setDescription] = useState('Creates a new user in the system and dispatches a welcome email. Requires admin or system-level API tokens.');
-  
+
   const [requestFields, setRequestFields] = useState<ApiField[]>([
     { id: '1', name: 'email', type: 'string', required: true, description: 'The unique email address for the new user.' },
     { id: '2', name: 'role', type: 'string', required: false, description: 'User role. Defaults to "member". Must be one of ["member", "admin"].' },
     { id: '3', name: 'metadata', type: 'object', required: false, description: 'Optional key-value pairs for additional CRM tracking data.' }
   ]);
-  
+
   const [responseFields, setResponseFields] = useState<ApiField[]>([
     { id: 'r1', name: 'id', type: 'string', required: true, description: 'The globally unique UUID of the newly created user.' },
     { id: 'r2', name: 'created_at', type: 'timestamp', required: true, description: 'ISO 8601 timestamp of creation.' },
@@ -112,14 +113,14 @@ export function APIDocumenterClient() {
     if (!previewRef.current) return;
     setIsGenerating3D(true);
     try {
-      const dataUrl = await toJpeg(previewRef.current, { 
-        quality: 0.8, 
+      const dataUrl = await toJpeg(previewRef.current, {
+        quality: 0.8,
         pixelRatio: 1.0,
         skipAutoScale: true,
         backgroundColor: '#ffffff'
       });
       setTextureUrl(dataUrl);
-      
+
       const rect = previewRef.current.getBoundingClientRect();
       if (rect.width && rect.height) {
         setAspect(rect.height / rect.width);
@@ -145,6 +146,53 @@ export function APIDocumenterClient() {
     }
   };
 
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'API Documenter',
+      `{
+        "template": "custom | createUser | getDashboard | deleteAccount",
+        "title": "string",
+        "method": "GET | POST | PUT | PATCH | DELETE",
+        "url": "string",
+        "description": "string",
+        "requestFields": [{"name": "string", "type": "string", "required": "boolean", "description": "string"}],
+        "responseFields": [{"name": "string", "type": "string", "description": "string"}]
+      }`,
+      (data: any) => {
+        if (data.template && Object.keys(TEMPLATES).includes(data.template)) {
+          setTemplate(data.template as keyof typeof TEMPLATES);
+        }
+        if (data.title) setTitle(data.title);
+        if (data.method) setMethod(data.method);
+        if (data.url) setUrl(data.url);
+        if (data.description) setDescription(data.description);
+
+        if (Array.isArray(data.requestFields)) {
+          setRequestFields(data.requestFields.map((f: any, i: number) => ({
+            id: `agent-req-${i}`,
+            name: f.name || '',
+            type: f.type || 'string',
+            required: !!f.required,
+            description: f.description || ''
+          })));
+        }
+
+        if (Array.isArray(data.responseFields)) {
+          setResponseFields(data.responseFields.map((f: any, i: number) => ({
+            id: `agent-res-${i}`,
+            name: f.name || '',
+            type: f.type || 'string',
+            required: true,
+            description: f.description || ''
+          })));
+        }
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
+
   useEffect(() => {
     if (viewMode === '3d') {
       const timer = setTimeout(generateTexture, 800);
@@ -156,7 +204,7 @@ export function APIDocumenterClient() {
     const printWindow = window.open('', '_blank');
     if (!printWindow || !previewRef.current) return;
     const contentHtml = previewRef.current.innerHTML;
-    
+
     printWindow.document.write(`
       <html>
         <head>
@@ -171,7 +219,7 @@ export function APIDocumenterClient() {
         </body>
       </html>
     `);
-    
+
     printWindow.document.close();
     printWindow.focus();
     setTimeout(() => {
@@ -240,11 +288,11 @@ export function APIDocumenterClient() {
                   value={method}
                   onChange={(e) => setMethod(e.target.value)}
                   className={`w-32 bg-foreground/5 border border-border/50 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all
-                    ${method === 'GET' ? 'text-blue-500' : 
-                      method === 'POST' ? 'text-emerald-500' : 
-                      method === 'PUT' ? 'text-orange-500' : 
-                      method === 'DELETE' ? 'text-rose-500' : 
-                      'text-foreground'}`}
+                    ${method === 'GET' ? 'text-blue-500' :
+                      method === 'POST' ? 'text-emerald-500' :
+                        method === 'PUT' ? 'text-orange-500' :
+                          method === 'DELETE' ? 'text-rose-500' :
+                            'text-foreground'}`}
                 >
                   <option value="GET">GET</option>
                   <option value="POST">POST</option>
@@ -278,7 +326,7 @@ export function APIDocumenterClient() {
               <label className="text-xs font-bold uppercase tracking-wider text-foreground/60 flex items-center gap-2">
                 <Code className="w-3 h-3 text-emerald-500" /> Request Payload
               </label>
-              <button 
+              <button
                 onClick={() => addField(setRequestFields, requestFields)}
                 className="flex items-center gap-1 text-[11px] font-bold text-emerald-500 hover:bg-emerald-500/10 px-2 py-1 rounded-md transition-colors"
               >
@@ -289,7 +337,7 @@ export function APIDocumenterClient() {
             <div className="space-y-3">
               <AnimatePresence>
                 {requestFields.map((field) => (
-                  <motion.div 
+                  <motion.div
                     key={field.id}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -320,7 +368,7 @@ export function APIDocumenterClient() {
                         />
                         Req
                       </label>
-                      <button 
+                      <button
                         onClick={() => removeField(setRequestFields, requestFields, field.id)}
                         className="p-1.5 text-foreground/30 hover:text-rose-500 transition-colors"
                       >
@@ -348,7 +396,7 @@ export function APIDocumenterClient() {
               <label className="text-xs font-bold uppercase tracking-wider text-foreground/60 flex items-center gap-2">
                 <Code className="w-3 h-3 text-blue-500" /> Response Payload
               </label>
-              <button 
+              <button
                 onClick={() => addField(setResponseFields, responseFields)}
                 className="flex items-center gap-1 text-[11px] font-bold text-blue-500 hover:bg-blue-500/10 px-2 py-1 rounded-md transition-colors"
               >
@@ -359,7 +407,7 @@ export function APIDocumenterClient() {
             <div className="space-y-3">
               <AnimatePresence>
                 {responseFields.map((field) => (
-                  <motion.div 
+                  <motion.div
                     key={field.id}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
@@ -381,7 +429,7 @@ export function APIDocumenterClient() {
                         className="w-24 bg-background border border-border/50 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500 transition-all font-mono text-blue-500/80"
                         placeholder="type"
                       />
-                      <button 
+                      <button
                         onClick={() => removeField(setResponseFields, responseFields, field.id)}
                         className="p-1.5 text-foreground/30 hover:text-rose-500 transition-colors ml-auto"
                       >
@@ -407,7 +455,7 @@ export function APIDocumenterClient() {
       <div className="flex-1 relative bg-foreground/5 overflow-hidden flex flex-col min-h-[500px] md:h-screen">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-surface/50 backdrop-blur-md sticky top-0 z-20">
           <h3 className="text-sm font-semibold text-foreground/80 tracking-wide uppercase">Document Preview</h3>
-          <button 
+          <button
             onClick={handlePrint}
             className="flex items-center gap-2 px-4 py-1.5 bg-background border border-border/50 hover:bg-surface/80 rounded-lg text-sm font-medium transition-all shadow-sm"
           >
@@ -426,17 +474,17 @@ export function APIDocumenterClient() {
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 mb-6">{title || 'Untitled Endpoint'}</h1>
               <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                 <span className={`px-3 py-1 rounded-md text-sm font-bold tracking-wider 
-                  ${method === 'GET' ? 'bg-blue-100 text-blue-700' : 
-                    method === 'POST' ? 'bg-emerald-100 text-emerald-700' : 
-                    method === 'PUT' ? 'bg-orange-100 text-orange-700' : 
-                    method === 'DELETE' ? 'bg-rose-100 text-rose-700' : 
-                    'bg-slate-200 text-slate-700'}`}
+                  ${method === 'GET' ? 'bg-blue-100 text-blue-700' :
+                    method === 'POST' ? 'bg-emerald-100 text-emerald-700' :
+                      method === 'PUT' ? 'bg-orange-100 text-orange-700' :
+                        method === 'DELETE' ? 'bg-rose-100 text-rose-700' :
+                          'bg-slate-200 text-slate-700'}`}
                 >
                   {method}
                 </span>
                 <span className="font-mono text-slate-600 font-semibold tracking-tight">{url}</span>
               </div>
-              
+
               {description && (
                 <div className="mt-6 text-slate-600 text-[15px] leading-relaxed">
                   {description}
@@ -516,7 +564,7 @@ export function APIDocumenterClient() {
             </div>
           </div>
         </div>
-        
+
         {viewMode === '3d' && (
           <div className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing z-10">
             {isGenerating3D && (

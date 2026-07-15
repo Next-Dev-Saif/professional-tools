@@ -100,16 +100,16 @@ export function HeroDocScene() {
         <Suspense fallback={null}>
           <ambientLight intensity={1.1} />
           <pointLight position={[6, 10, 8]} intensity={2.8} color="#ffffff" castShadow={false} />
-          <pointLight position={[-6, 2, 4]} intensity={0.8} color="#93c5fd" />
-          <pointLight position={[2, -4, 6]} intensity={0.4} color="#c7d2fe" />
+          <pointLight position={[-6, 2, 4]} intensity={0.8} color="#fdba74" />
+          <pointLight position={[2, -4, 6]} intensity={0.4} color="#fde68a" />
 
           {/* Back card — tilted left, muted */}
           <Float speed={1.1} rotationIntensity={0.06} floatIntensity={0.3}>
             <DocCard
               position={[-1.9, -0.1, -1.2]}
               rotation={[0.06, 0.22, -0.14]}
-              color="#f0f4ff"
-              accentColor="#6366f1"
+              color="#fff7ed"
+              accentColor="#f97316"
               delay={2.1}
             />
           </Float>
@@ -119,8 +119,8 @@ export function HeroDocScene() {
             <DocCard
               position={[1.85, 0.0, -0.4]}
               rotation={[0.04, -0.18, 0.1]}
-              color="#f8faff"
-              accentColor="#0ea5e9"
+              color="#ffedd5"
+              accentColor="#f59e0b"
               delay={0.8}
             />
           </Float>
@@ -131,7 +131,7 @@ export function HeroDocScene() {
               position={[0, 0.15, 1.1]}
               rotation={[0.02, 0.0, -0.02]}
               color="#ffffff"
-              accentColor="#2563eb"
+              accentColor="#ea580c"
               delay={0}
             />
           </Float>

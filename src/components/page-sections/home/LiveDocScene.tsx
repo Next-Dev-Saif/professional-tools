@@ -23,8 +23,8 @@ function DocumentStack() {
 
   const pageW = 3.2;
   const pageH = 4.5;
-  const lineColor = '#d1daf2';
-  const accentBlue = new THREE.Color('#2563eb');
+  const lineColor = '#ffedd5';
+  const accentOrange = new THREE.Color('#ea580c');
   const boardColor = new THREE.Color('#5c3d1e');
 
   return (
@@ -57,7 +57,7 @@ function DocumentStack() {
       {[0.04, 0.02].map((z, i) => (
         <mesh key={i} position={[i * 0.03 - 0.02, 0, z - 0.04]} castShadow receiveShadow>
           <planeGeometry args={[pageW, pageH]} />
-          <meshStandardMaterial color="#edf2ff" roughness={0.6} side={THREE.FrontSide} />
+          <meshStandardMaterial color="#fff7ed" roughness={0.6} side={THREE.FrontSide} />
         </mesh>
       ))}
 
@@ -70,10 +70,10 @@ function DocumentStack() {
       {/* Header stripe */}
       <mesh position={[0, pageH / 2 - 0.38, 0.06]}>
         <planeGeometry args={[pageW, 0.62]} />
-        <meshStandardMaterial color={accentBlue} roughness={0.3} />
+        <meshStandardMaterial color={accentOrange} roughness={0.3} />
       </mesh>
 
-      {/* Header text lines (white bars on blue) */}
+      {/* Header text lines (white bars on orange) */}
       {[0, -0.18].map((y, i) => (
         <mesh key={i} position={[i === 1 ? -0.3 : 0, pageH / 2 - 0.38 + y, 0.07]}>
           <planeGeometry args={[i === 1 ? 1.6 : 2.2, 0.09]} />
@@ -96,12 +96,12 @@ function DocumentStack() {
       {/* Section divider */}
       <mesh position={[0, -0.55, 0.061]}>
         <planeGeometry args={[pageW - 0.3, 0.015]} />
-        <meshStandardMaterial color="#c7d5f0" roughness={0.5} />
+        <meshStandardMaterial color="#fed7aa" roughness={0.5} />
       </mesh>
 
       {/* Bottom status badge */}
       <RoundedBox args={[0.9, 0.24, 0.025]} radius={0.06} smoothness={4} position={[-0.9, -pageH / 2 + 0.3, 0.07]}>
-        <meshStandardMaterial color={accentBlue} roughness={0.3} opacity={0.8} transparent />
+        <meshStandardMaterial color={accentOrange} roughness={0.3} opacity={0.8} transparent />
       </RoundedBox>
     </group>
   );
@@ -118,7 +118,7 @@ export function LiveDocScene() {
         <Suspense fallback={null}>
           <ambientLight intensity={1.0} />
           <pointLight position={[7, 10, 9]} intensity={2.6} color="#ffffff" />
-          <pointLight position={[-5, 3, 5]} intensity={0.6} color="#93c5fd" />
+          <pointLight position={[-5, 3, 5]} intensity={0.6} color="#fdba74" />
 
           <Float speed={1.2} rotationIntensity={0.04} floatIntensity={0.18}>
             <DocumentStack />

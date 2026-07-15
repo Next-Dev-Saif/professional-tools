@@ -54,7 +54,7 @@ export const useDocumentStore = create<DocumentState>()(
       elements: [],
       selectedElementId: null,
       globalSettings: {
-        primaryColor: '#3b82f6', // blue-500
+        primaryColor: '#f97316', // orange-500
         fontFamily: 'Inter, sans-serif',
         backgroundColor: '#ffffff',
       },

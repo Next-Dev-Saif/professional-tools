@@ -474,6 +474,36 @@ export const TOOL_REGISTRY: ToolDefinition[] = [
       },
     ],
   },
+  // ─── Form Filler ──────────────────────────────────────────────
+  {
+    id: 'form-filler',
+    name: 'Form Filler',
+    description:
+      'Parses natural language prompts to populate a web form matching a strict schema.',
+    category: 'engineering',
+    uiPath: '/tools/form-filler',
+    parameters: {
+      type: 'object',
+      required: ['prompt', 'schemaDescription'],
+      properties: {
+        prompt: {
+          type: 'string',
+          description: 'The user instructions for what to fill out.',
+        },
+        schemaDescription: {
+          type: 'string',
+          description: 'The JSON schema or description of fields available on the active form.',
+        }
+      },
+    },
+    output: {
+      format: 'json',
+      streaming: false,
+      contentType: 'application/json',
+      fileExtension: 'json',
+    },
+    examples: [],
+  },
 ];
 
 /** Fast O(1) lookup by toolId */

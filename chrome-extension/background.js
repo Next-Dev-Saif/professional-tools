@@ -12,7 +12,7 @@ let eventSource = null;
 let bridgeStatus = 'disconnected'; // disconnected, connecting, connected
 
 function broadcastStatus() {
-  chrome.runtime.sendMessage({ type: 'BRIDGE_STATUS', status: bridgeStatus }).catch(() => {});
+  chrome.runtime.sendMessage({ type: 'BRIDGE_STATUS', status: bridgeStatus }).catch(() => { });
 }
 
 function connectRelay() {
@@ -52,7 +52,7 @@ async function startStreamingFetch() {
     while (true) {
       const { value, done } = await reader.read();
       if (done) break;
-      
+
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split('\n');
       buffer = lines.pop(); // keep incomplete line in buffer
@@ -86,7 +86,7 @@ function handleCommand(data) {
     console.log('[Hephaestus Relay] Connected to Next.js API.');
     return;
   }
-  
+
   // Broadcast to the active tab (assuming it's localhost:3000)
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (tabs[0]?.id) {

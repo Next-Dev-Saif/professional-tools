@@ -21,7 +21,7 @@ const HeroDocScene = dynamic(
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden">
-      {/* Ambient background — top-left warm blue wash */}
+      {/* Ambient background — top-left warm orange wash */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 -left-40 w-[700px] h-[700px] rounded-full -z-10"
@@ -68,7 +68,7 @@ export function HeroSection() {
               <br />
               <span
                 style={{
-                  background: 'linear-gradient(130deg, #1d4ed8 0%, #3b82f6 60%, #6366f1 100%)',
+                  background: 'linear-gradient(130deg, #c2410c 0%, #f97316 60%, #f59e0b 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
@@ -101,14 +101,14 @@ export function HeroSection() {
             >
               <Link
                 href="/tools/commit-to-doc"
-                className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-[10px] bg-primary text-white font-semibold text-[15px] shadow-sm hover:bg-blue-700 transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="group inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-primary text-white font-semibold text-[15px] shadow-sm hover:bg-orange-700 transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 Start generating
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
               </Link>
               <Link
                 href="#tools"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[10px] border border-border/70 text-foreground/75 font-semibold text-[15px] hover:bg-surface hover:text-foreground transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-border/70 text-foreground/75 font-semibold text-[15px] hover:bg-surface hover:text-foreground transition-colors duration-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/30 focus:ring-offset-2"
               >
                 Browse tools
               </Link>

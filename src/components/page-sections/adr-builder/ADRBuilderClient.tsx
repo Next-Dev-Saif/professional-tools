@@ -6,6 +6,7 @@ import { toJpeg } from 'html-to-image';
 import { ThreeDViewer } from '@/components/core/ThreeDViewer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useAgent } from '@/context/AgentContext';
 
 export function ADRBuilderClient() {
   const adrId = useId().replace(/:/g, '').toUpperCase().slice(0, 6);
@@ -19,6 +20,31 @@ export function ADRBuilderClient() {
   const [decision, setDecision] = useState('We will migrate the frontend to Next.js using the new App Router architecture. This will allow us to utilize React Server Components for improved performance.');
   const [consequences, setConsequences] = useState('**Positive:**\n- Better SEO and page load speeds.\n- Unified routing and API logic.\n\n**Negative:**\n- Learning curve for the team regarding Server Components vs Client Components.\n- Slightly more complex deployment requirements compared to static hosting.');
   
+  const { registerPage, unregisterPage } = useAgent();
+
+  useEffect(() => {
+    registerPage(
+      'ADR Builder',
+      `{
+        "title": "string",
+        "date": "YYYY-MM-DD",
+        "status": "Proposed | Accepted | Rejected | Deprecated | Superseded",
+        "context": "string (markdown)",
+        "decision": "string (markdown)",
+        "consequences": "string (markdown)"
+      }`,
+      (data: any) => {
+        if (data.title) setTitle(data.title);
+        if (data.date) setDate(data.date);
+        if (data.status) setStatus(data.status);
+        if (data.context) setContext(data.context);
+        if (data.decision) setDecision(data.decision);
+        if (data.consequences) setConsequences(data.consequences);
+      }
+    );
+    return () => unregisterPage();
+  }, [registerPage, unregisterPage]);
+
   const previewRef = useRef<HTMLDivElement>(null);
   const [textureUrl, setTextureUrl] = useState<string>('');
   const [isGenerating3D, setIsGenerating3D] = useState(false);
